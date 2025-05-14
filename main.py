@@ -260,7 +260,7 @@ elif selected == "Registro de horas":
                 st.success(f"✅ Proyecto '{proyecto_seleccionado}' terminado correctamente.")
             else:
                 # Iniciar proyecto
-                inicio = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                inicio = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 insertar_registro(st.session_state.user, proyecto_seleccionado, inicio)
                 # Guardar ID del registro y estado de sesión
                 ultimo_registro = obtener_ultimo_registro(st.session_state.user, proyecto_seleccionado)
