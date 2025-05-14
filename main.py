@@ -184,11 +184,11 @@ if selected == "Inicio":
         st.markdown(f"**Total acumulado:** `{total_legible}` (≈ {round(total_horas, 2)} horas)")
 
      except psycopg2.Error as e:
-        st.error(f"Database error: {e}")
+         st.error(f"Database error: {e}")
     
      finally:
-        if conn:
-            conn.close()
+         if conn:
+             conn.close()
 
 elif selected == "Registro de horas":
      
