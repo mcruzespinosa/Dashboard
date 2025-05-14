@@ -221,8 +221,8 @@ elif selected == "Registro de horas":
      st.subheader("Controla el tiempo de tus proyectos fácilmente")
      if proyectos:
         proyecto_seleccionado=st.selectbox("Selecciona tu proyecto",proyectos)
-        st.write(f"🔄 Estado del botón: *{proyecto_seleccionado}*")
-        st.write(f"🔄 Estado del botón: *{st.session_state.user}*")
+        #st.write(f"🔄 Estado del botón: *{proyecto_seleccionado}*")
+        #st.write(f"🔄 Estado del botón: *{st.session_state.user}*")
         # Inicializar estados
         if "boton_texto" not in st.session_state:
             st.session_state.boton_texto = "Iniciar"
@@ -280,7 +280,7 @@ elif selected == "Registro de horas":
         st.button(st.session_state.boton_texto, on_click=cambiar_estado, key="cambiar_estado_btn", help="Haz clic para iniciar o terminar un proyecto.")
 
         # Mostrar el estado actual del botón
-        st.write(f"🔄 Estado del botón: *{st.session_state.boton_texto}*")
+        #st.write(f"🔄 Estado del botón: *{st.session_state.boton_texto}*")
 
             
         
