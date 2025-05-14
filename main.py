@@ -230,7 +230,7 @@ elif selected == "Registro de horas":
             if st.session_state.proyecto_activo:
                 # Terminar proyecto
                 fin = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                inicio = st.session_state.inicio_proyecto
+                inicio = st.session_state.inicio_proyecto.strftime("%Y-%m-%d %H:%M:%S")
                 duracion = str(datetime.strptime(fin, "%Y-%m-%d %H:%M:%S") - datetime.strptime(inicio, "%Y-%m-%d %H:%M:%S"))
                 actualizar_registro(st.session_state.id_registro, fin, duracion)
         
