@@ -39,9 +39,9 @@ def login_register():
                 st.session_state.logged_in = True
                 st.session_state.user = nombre
                 if verify_user(nombre, contrasena):
-                    st.session_state.user = nombre.lower()
+                    st.session_state.user.lower() = nombre
                     # Verifica si es el administrador
-                if st.session_state.user == "martin cruz":
+                if st.session_state.user..lower() == "martin cruz":
                     st.switch_page("pages/admin.py")  # Cambia a la página admin
                 else:
                     st.rerun()
