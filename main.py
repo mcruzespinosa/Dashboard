@@ -193,14 +193,14 @@ if selected == "Inicio":
             total_legible = str(timedelta(seconds=int(total_horas * 3600)))
             st.markdown(f"*Total acumulado:* {total_legible} (≈ {round(total_horas, 2)} horas)")
 
-        except psycopg2.Error as e:
-            st.error(f"Database error: {e}")
-            df = pd.DataFrame()  # DataFrame vacío si ocurre un error
+    except psycopg2.Error as e:
+        st.error(f"Database error: {e}")
+        df = pd.DataFrame()  # DataFrame vacío si ocurre un error
 
-        finally:
-            # Asegurarse de cerrar la conexión
-            if 'conn' in locals() and conn is not None:
-                conn.close()
+    finally:
+        # Asegurarse de cerrar la conexión
+        if 'conn' in locals() and conn is not None:
+            conn.close()
 
 
 
