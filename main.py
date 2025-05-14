@@ -151,56 +151,70 @@ if selected == "Inicio":
     # import pandas as pd
 
     # Conectar a la base de datos y obtener los datos sin agregarlos
-    try:
-        conn = get_connection()  # Use your PostgreSQL connection function
-        cursor = conn.cursor()
-        query = """
-            SELECT proyecto, duracion
-            FROM registros
-            WHERE usuario = %s  -- Use %s for psycopg2
-        """
-        cursor.execute(query, (usuario,))  # Pass parameters as a tuple
-        rows = cursor.fetchall()
-        df = pd.DataFrame(rows, columns=['proyecto', 'duracion'])  # Create DataFrame
-    except psycopg2.Error as e:
-        st.error(f"Database error: {e}")
-        df = pd.DataFrame()  # Return an empty DataFrame in case of error
-    finally:
-        if conn:
-            conn.close()
 
-    if df.empty:
+    try:
+    # Conexión a la base de datos
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # Consulta optimizada
+    query = """
+    SELECT proyecto, SUM(duracion) as total_duracion
+    FROM registros
+    WHERE usuario = %s
+    GROUP BY proyecto
+    """
+    cursor.execute(query, (usuario,))
+    rows = cursor.fetchall()
+
+    # Verificación rápida de datos vacíos
+    if not rows:
         st.info("No hay registros de tiempo para mostrar.")
     else:
-        # Función para convertir HH:MM:SS a horas flotantes
-        def time_to_hours(time_str):
-            try:
-                if isinstance(time_str, str):
-                    h, m, s = map(int, time_str.strip().split(":"))
-                    return h + m / 60 + s / 3600
-            except Exception as e:
-                st.warning(f"Error en duración '{time_str}': {e}")
-            return 0
 
-        # Aplicar la conversión
-        df['duracion_horas'] = df['duracion'].apply(time_to_hours)
+        # Crear DataFrame directamente
+        df = pd.DataFrame(rows, columns=['proyecto', 'total_duracion'])
 
-        # Agrupar por proyecto
-        resumen = df.groupby('proyecto')['duracion_horas'].sum().reset_index()
-        # Redondear a 2 decimales para visualización
-        resumen['horas_redondeadas'] = resumen['duracion_horas'].round(2)
-        # Mostrar
+        # Convertir intervalos a horas flotantes
+        df['duracion_horas'] = df['total_duracion'].apply(lambda x: x.total_seconds() / 3600)
 
-        st.write("**Horas trabajadas por proyecto:**")
-        st.dataframe(resumen[['proyecto', 'horas_redondeadas']])
+        # Redondear para visualización
+        df['horas_redondeadas'] = df['duracion_horas'].round(2)
 
-        # Gráfico
-        st.bar_chart(resumen.set_index('proyecto')['duracion_horas'])
-        # ➕ Mostrar total acumulado en HH:MM:SS
-        total_horas = resumen['duracion_horas'].sum()
-        total_segundos = int(total_horas * 3600)
-        total_legible = str(timedelta(seconds=total_segundos))
-        st.markdown(f"**Total acumulado:** `{total_legible}` (≈ {round(total_horas, 2)} horas)")
+        # Mostrar tabla
+        st.write("*Horas trabajadas por proyecto:*")
+        st.dataframe(df[['proyecto', 'horas_redondeadas']])
+
+        # Gráfico de barras
+        st.bar_chart(df.set_index('proyecto')['duracion_horas'])
+
+        # Mostrar total acumulado
+        total_horas = df['duracion_horas'].sum()
+        total_legible = str(timedelta(seconds=int(total_horas * 3600)))
+        st.markdown(f"*Total acumulado:* {total_legible} (≈ {round(total_horas, 2)} horas)")
+
+    except psycopg2.Error as e:
+        st.error(f"Database error: {e}")
+        df = pd.DataFrame()  # DataFrame vacío si ocurre un error
+
+    finally:
+        # Asegurarse de cerrar la conexión
+        if 'conn' in locals() and conn is not None:
+            conn.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 elif selected == "Registro de horas":
      
      proyectos=obtener_proyectos(st.session_state.user)
