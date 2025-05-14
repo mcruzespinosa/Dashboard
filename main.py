@@ -132,26 +132,18 @@ with st.sidebar:
 
 
 if selected == "Inicio":
-    # db_path = load_db_path()  # Remove this line
     st.title(f"👤 Bienvenido {st.session_state.user} ")
     st.info("Usa el menú para navegar por el sistema.")
-    create_tables()  # This will now use the PostgreSQL connection
-    # Verificar si el usuario está logueado
+    create_tables()
+
     if "user" not in st.session_state:
         st.error("Por favor, inicie sesión para ver esta sección.")
         st.stop()
 
     usuario = st.session_state.user
 
-    # Conectar a la base de datos y consultar los datos
-    # import sqlite3  # Remove sqlite3 import
-
-    # DB_PATH = load_db_path()  # Remove these lines
-    # import pandas as pd
-
-    # Conectar a la base de datos y obtener los datos sin agregarlo
     try:
-        conn = get_connection()  # Use your PostgreSQL connection function
+        conn = get_connection()
         cursor = conn.cursor()
         query = """
         SELECT proyecto, SUM(duracion) as total_duracion
@@ -159,12 +151,14 @@ if selected == "Inicio":
         WHERE usuario = %s
         GROUP BY proyecto
         """
-        cursor.execute(query, (usuario,))  # Pass parameters as a tuple
+        cursor.execute(query, (usuario,))
         rows = cursor.fetchall()
-        df = pd.DataFrame(rows, columns=['proyecto', 'duracion'])  # Create DataFrame
+
+        # Asegúrate de usar el nombre correcto de las columnas
+        df = pd.DataFrame(rows, columns=['proyecto', 'total_duracion'])
     except psycopg2.Error as e:
         st.error(f"Database error: {e}")
-        df = pd.DataFrame()  # Return an empty DataFrame in case of error
+        df = pd.DataFrame()  # DataFrame vacío si ocurre un error
     finally:
         if conn:
             conn.close()
@@ -172,36 +166,23 @@ if selected == "Inicio":
     if df.empty:
         st.info("No hay registros de tiempo para mostrar.")
     else:
-        # Función para convertir HH:MM:SS a horas flotantes
-        def time_to_hours(time_str):
-            try:
-                if isinstance(time_str, str):
-                    h, m, s = map(int, time_str.strip().split(":"))
-                    return h + m / 60 + s / 3600
-            except Exception as e:
-                st.warning(f"Error en duración '{time_str}': {e}")
-            return 0
+        # Convertir intervalos a horas flotantes
+        df['duracion_horas'] = df['total_duracion'].apply(lambda x: x.total_seconds() / 3600)
 
-        # Aplicar la conversión
-        df['duracion_horas'] = df['duracion'].apply(time_to_hours)
+        # Redondear para visualización
+        df['horas_redondeadas'] = df['duracion_horas'].round(2)
 
-        # Agrupar por proyecto
-        resumen = df.groupby('proyecto')['duracion_horas'].sum().reset_index()
-        # Redondear a 2 decimales para visualización
-        resumen['horas_redondeadas'] = resumen['duracion_horas'].round(2)
-        # Mostrar
-
+        # Mostrar la tabla
         st.write("**Horas trabajadas por proyecto:**")
-        st.dataframe(resumen[['proyecto', 'horas_redondeadas']])
+        st.dataframe(df[['proyecto', 'horas_redondeadas']])
 
-        # Gráfico
-        st.bar_chart(resumen.set_index('proyecto')['duracion_horas'])
-        # ➕ Mostrar total acumulado en HH:MM:SS
-        total_horas = resumen['duracion_horas'].sum()
-        total_segundos = int(total_horas * 3600)
-        total_legible = str(timedelta(seconds=total_segundos))
+        # Gráfico de barras
+        st.bar_chart(df.set_index('proyecto')['duracion_horas'])
+
+        # Mostrar total acumulado
+        total_horas = df['duracion_horas'].sum()
+        total_legible = str(timedelta(seconds=int(total_horas * 3600)))
         st.markdown(f"**Total acumulado:** `{total_legible}` (≈ {round(total_horas, 2)} horas)")
-
 
 elif selected == "Registro de horas":
      
