@@ -143,52 +143,54 @@ if selected == "Inicio":
     usuario = st.session_state.user
 
     try:
-        # Conexión a la base de datos
-        conn = get_connection()
-        cursor = conn.cursor()
+    # Conexión a la base de datos
+    conn = get_connection()
+    cursor = conn.cursor()
 
-        # Consulta optimizada
-        query = """
-        SELECT proyecto, SUM(duracion) as total_duracion
-        FROM registros
-        WHERE usuario = %s
-        GROUP BY proyecto
-        """
-        cursor.execute(query, (usuario,))
-        rows = cursor.fetchall()
+    # Consulta optimizada
+    query = """
+    SELECT proyecto, SUM(duracion) as total_duracion
+    FROM registros
+    WHERE usuario = %s
+    GROUP BY proyecto
+    """
+    cursor.execute(query, (usuario,))
+    rows = cursor.fetchall()
 
-        # Verificación rápida de datos vacíos
-        if not rows:
-            st.info("No hay registros de tiempo para mostrar.")
-            return
+    # Verificación rápida de datos vacíos
+    if not rows:
+        st.info("No hay registros de tiempo para mostrar.")
+        return
 
-        # Crear DataFrame directamente
-        df = pd.DataFrame(rows, columns=['proyecto', 'total_duracion'])
+    # Crear DataFrame directamente
+    df = pd.DataFrame(rows, columns=['proyecto', 'total_duracion'])
 
-        # Convertir intervalos a horas flotantes
-        df['duracion_horas'] = df['total_duracion'].apply(lambda x: x.total_seconds() / 3600)
+    # Convertir intervalos a horas flotantes
+    df['duracion_horas'] = df['total_duracion'].apply(lambda x: x.total_seconds() / 3600)
 
-        # Redondear para visualización
-        df['horas_redondeadas'] = df['duracion_horas'].round(2)
+    # Redondear para visualización
+    df['horas_redondeadas'] = df['duracion_horas'].round(2)
 
-        # Mostrar tabla
-        st.write("**Horas trabajadas por proyecto:**")
-        st.dataframe(df[['proyecto', 'horas_redondeadas']])
+    # Mostrar tabla
+    st.write("**Horas trabajadas por proyecto:**")
+    st.dataframe(df[['proyecto', 'horas_redondeadas']])
 
-        # Gráfico de barras
-        st.bar_chart(df.set_index('proyecto')['duracion_horas'])
+    # Gráfico de barras
+    st.bar_chart(df.set_index('proyecto')['duracion_horas'])
 
-        # Mostrar total acumulado
-        total_horas = df['duracion_horas'].sum()
-        total_legible = str(timedelta(seconds=int(total_horas * 3600)))
-        st.markdown(f"**Total acumulado:** `{total_legible}` (≈ {round(total_horas, 2)} horas)")
+    # Mostrar total acumulado
+    total_horas = df['duracion_horas'].sum()
+    total_legible = str(timedelta(seconds=int(total_horas * 3600)))
+    st.markdown(f"**Total acumulado:** `{total_legible}` (≈ {round(total_horas, 2)} horas)")
 
-     except psycopg2.Error as e:
-         st.error(f"Database error: {e}")
-    
-     finally:
-         if conn:
-             conn.close()
+except psycopg2.Error as e:
+    st.error(f"Database error: {e}")
+    df = pd.DataFrame()  # DataFrame vacío si ocurre un error
+
+finally:
+    # Asegurarse de cerrar la conexión
+    if 'conn' in locals() and conn is not None:
+        conn.close()
 
 elif selected == "Registro de horas":
      
