@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import psycopg2
 import pandas as pd
 from datetime import timedelta
-#from datetime import datetime
+from datetime import datetime
 # --- CONFIGURACIÓN ---
 BACKGROUND_IMG = "registro_incidencias_fondo.jpg"
 LOGO_URL = "https://vimexelectronics.mx/wp-content/uploads/2023/07/icon_vimex.png"
