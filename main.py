@@ -16,9 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import psycopg2
 import pandas as pd
-from datetime import timedelta
-
-
+from datetime import timedeltafrom datetime import datetime
 # --- CONFIGURACIÓN ---
 BACKGROUND_IMG = "registro_incidencias_fondo.jpg"
 LOGO_URL = "https://vimexelectronics.mx/wp-content/uploads/2023/07/icon_vimex.png"
@@ -229,12 +227,17 @@ elif selected == "Registro de horas":
     
             if st.session_state.proyecto_activo:
                 # Terminar proyecto
+                from datetime import datetime
+
                 fin = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 inicio = st.session_state.inicio_proyecto
 
-                # Convertir a cadena si es datetime
+                # Asegúrate de que 'inicio' sea una cadena
                 if isinstance(inicio, datetime):
                    inicio = inicio.strftime("%Y-%m-%d %H:%M:%S")
+                elif not isinstance(inicio, str):
+                   st.error(f"El valor de 'inicio_proyecto' no es válido: {inicio} ({type(inicio)})")
+                   return
 
                 duracion = str(datetime.strptime(fin, "%Y-%m-%d %H:%M:%S") - datetime.strptime(inicio, "%Y-%m-%d %H:%M:%S"))
         
