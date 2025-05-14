@@ -143,8 +143,11 @@ if selected == "Inicio":
     usuario = st.session_state.user
 
     try:
+        # Conexión a la base de datos
         conn = get_connection()
         cursor = conn.cursor()
+
+        # Consulta optimizada
         query = """
         SELECT proyecto, SUM(duracion) as total_duracion
         FROM registros
@@ -154,25 +157,21 @@ if selected == "Inicio":
         cursor.execute(query, (usuario,))
         rows = cursor.fetchall()
 
-        # Asegúrate de usar el nombre correcto de las columnas
-        df = pd.DataFrame(rows, columns=['proyecto', 'total_duracion'])
-    except psycopg2.Error as e:
-        st.error(f"Database error: {e}")
-        df = pd.DataFrame()  # DataFrame vacío si ocurre un error
-    finally:
-        if conn:
-            conn.close()
+        # Verificación rápida de datos vacíos
+        if not rows:
+            st.info("No hay registros de tiempo para mostrar.")
+            return
 
-    if df.empty:
-        st.info("No hay registros de tiempo para mostrar.")
-    else:
+        # Crear DataFrame directamente
+        df = pd.DataFrame(rows, columns=['proyecto', 'total_duracion'])
+
         # Convertir intervalos a horas flotantes
         df['duracion_horas'] = df['total_duracion'].apply(lambda x: x.total_seconds() / 3600)
 
         # Redondear para visualización
         df['horas_redondeadas'] = df['duracion_horas'].round(2)
 
-        # Mostrar la tabla
+        # Mostrar tabla
         st.write("**Horas trabajadas por proyecto:**")
         st.dataframe(df[['proyecto', 'horas_redondeadas']])
 
@@ -183,6 +182,13 @@ if selected == "Inicio":
         total_horas = df['duracion_horas'].sum()
         total_legible = str(timedelta(seconds=int(total_horas * 3600)))
         st.markdown(f"**Total acumulado:** `{total_legible}` (≈ {round(total_horas, 2)} horas)")
+
+    except psycopg2.Error as e:
+        st.error(f"Database error: {e}")
+    
+    finally:
+        if conn:
+            conn.close()
 
 elif selected == "Registro de horas":
      
