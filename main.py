@@ -16,7 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import psycopg2
 import pandas as pd
-from datetime import timedelta
+
 from datetime 
 # --- CONFIGURACIÓN ---
 BACKGROUND_IMG = "registro_incidencias_fondo.jpg"
