@@ -9,10 +9,12 @@ from PIL import Image
 import requests
 import io
 import os
-from database import verify_user, obtener_ultimo_registro,add_user,insertar_registro, obtener_proyectos,load_db_path,actualizar_registro, add_incident, get_incidents, create_tables, add_exam
+from database import verify_user, obtener_ultimo_registro, get_connection, add_user, insertar_registro, \
+obtener_proyectos, actualizar_registro, add_incident, get_incidents, create_tables, add_exam
 from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
+import psycopg2
 import pandas as pd
 from datetime import timedelta
 
@@ -32,7 +34,7 @@ def login_register():
         contrasena = st.text_input("Contraseña", type="password")
         submitted = st.form_submit_button("Ingresar")
         if submitted:
-            db_path = load_db_path()
+           # db_path = load_db_path()
             create_tables()
             if verify_user(nombre, contrasena):  # ✅ solo dos argumentos
                 st.session_state.logged_in = True
@@ -132,11 +134,11 @@ with st.sidebar:
 
 
 if selected == "Inicio":
-    db_path = load_db_path()
+    # db_path = load_db_path()  # Remove this line
     st.title(f"👤 Bienvenido {st.session_state.user} ")
     st.info("Usa el menú para navegar por el sistema.")
-    create_tables()
-     # Verificar si el usuario está logueado
+    create_tables()  # This will now use the PostgreSQL connection
+    # Verificar si el usuario está logueado
     if "user" not in st.session_state:
         st.error("Por favor, inicie sesión para ver esta sección.")
         st.stop()
@@ -144,20 +146,29 @@ if selected == "Inicio":
     usuario = st.session_state.user
 
     # Conectar a la base de datos y consultar los datos
-    import sqlite3
-    import pandas as pd
+    # import sqlite3  # Remove sqlite3 import
 
-    DB_PATH = load_db_path()  # Asegúrate de tener el path correcto o usar load_db_path()
+    # DB_PATH = load_db_path()  # Remove these lines
+    # import pandas as pd
 
-   # Conectar a la base de datos y obtener los datos sin agregarlos
-    conn = sqlite3.connect(DB_PATH)
-    query = """
-    SELECT proyecto, duracion
-    FROM registros
-    WHERE usuario = ?
-    """
-    df = pd.read_sql_query(query, conn, params=(usuario,))
-    conn.close()
+    # Conectar a la base de datos y obtener los datos sin agregarlos
+    try:
+        conn = get_connection()  # Use your PostgreSQL connection function
+        cursor = conn.cursor()
+        query = """
+            SELECT proyecto, duracion
+            FROM registros
+            WHERE usuario = %s  -- Use %s for psycopg2
+        """
+        cursor.execute(query, (usuario,))  # Pass parameters as a tuple
+        rows = cursor.fetchall()
+        df = pd.DataFrame(rows, columns=['proyecto', 'duracion'])  # Create DataFrame
+    except psycopg2.Error as e:
+        st.error(f"Database error: {e}")
+        df = pd.DataFrame()  # Return an empty DataFrame in case of error
+    finally:
+        if conn:
+            conn.close()
 
     if df.empty:
         st.info("No hay registros de tiempo para mostrar.")
