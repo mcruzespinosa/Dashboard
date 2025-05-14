@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from datetime import datetime
+from datetime
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -11,7 +11,6 @@ import io
 import os
 from database import verify_user, obtener_ultimo_registro, get_connection, add_user, insertar_registro, \
 obtener_proyectos, actualizar_registro, add_incident, get_incidents, create_tables, add_exam
-from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import psycopg2
