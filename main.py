@@ -149,14 +149,15 @@ if selected == "Inicio":
     # DB_PATH = load_db_path()  # Remove these lines
     # import pandas as pd
 
-    # Conectar a la base de datos y obtener los datos sin agregarlos
+    # Conectar a la base de datos y obtener los datos sin agregarlo
     try:
         conn = get_connection()  # Use your PostgreSQL connection function
         cursor = conn.cursor()
         query = """
-            SELECT proyecto, duracion
-            FROM registros
-            WHERE usuario = %s  -- Use %s for psycopg2
+        SELECT proyecto, SUM(duracion) as total_duracion
+        FROM registros
+        WHERE usuario = %s
+        GROUP BY proyecto
         """
         cursor.execute(query, (usuario,))  # Pass parameters as a tuple
         rows = cursor.fetchall()
@@ -200,6 +201,7 @@ if selected == "Inicio":
         total_segundos = int(total_horas * 3600)
         total_legible = str(timedelta(seconds=total_segundos))
         st.markdown(f"**Total acumulado:** `{total_legible}` (≈ {round(total_horas, 2)} horas)")
+
 
 elif selected == "Registro de horas":
      
