@@ -240,7 +240,7 @@ elif selected == "Registro de horas":
                 # Terminar proyecto
                 #from datetime import datetime
 
-                fin = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                fin = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 inicio = st.session_state.inicio_proyecto
 
                 # Asegúrate de que 'inicio' sea una cadena
