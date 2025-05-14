@@ -335,15 +335,25 @@ def actualizar_registro(id_registro, fin, duracion):
 
 def obtener_ultimo_registro(usuario, proyecto):
     """Retrieves the last started time tracking entry for a user and project."""
-
     conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT id, inicio FROM registros
-        WHERE usuario = %s AND proyecto = %s AND fin IS NULL
-        ORDER BY inicio DESC LIMIT 1
-    """, (usuario, proyecto))
-    registro = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return registro
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, inicio FROM registros
+            WHERE usuario = %s AND proyecto = %s AND fin IS NULL
+            ORDER BY inicio DESC LIMIT 1
+        """, (usuario, proyecto))
+        registro = cursor.fetchone()
+    except Exception as e:
+        print(f"Error al obtener el último registro: {e}")
+        registro = None
+    finally:
+        cursor.close()
+        conn.close()
+
+    # Verificar si se obtuvo un registro
+    if registro is None:
+        return None
+
+    # Retornar el ID y la fecha de inicio como cadena
+    return registro[0], registro[1].strftime("%Y-%m-%d %H:%M:%S") if isinstance(registro[1], datetime) else registro[1]
