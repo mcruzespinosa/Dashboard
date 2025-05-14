@@ -183,10 +183,10 @@ if selected == "Inicio":
         total_legible = str(timedelta(seconds=int(total_horas * 3600)))
         st.markdown(f"**Total acumulado:** `{total_legible}` (≈ {round(total_horas, 2)} horas)")
 
-    except psycopg2.Error as e:
+     except psycopg2.Error as e:
         st.error(f"Database error: {e}")
     
-    finally:
+     finally:
         if conn:
             conn.close()
 
