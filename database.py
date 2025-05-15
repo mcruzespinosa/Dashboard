@@ -300,7 +300,7 @@ def obtener_numero_proyecto(proyecto):
 
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT numero_proyecto FROM proyectos WHERE ingeniero=%s", (proyectos,))
+    cursor.execute("SELECT numero_proyecto FROM proyectos WHERE nombre_proyecto=%s", (proyectos,))
     proyectos = [row[0] for row in cursor.fetchall()]
     cursor.close()
     conn.close()
