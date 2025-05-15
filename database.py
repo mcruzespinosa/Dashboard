@@ -295,6 +295,17 @@ def obtener_proyectos(ingeniero):
     conn.close()
     return proyectos
 
+def obtener_numero_proyecto(proyecto):
+    """obtiene el numero de proyecto por ingeniero."""
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT numero_proyecto FROM proyectos WHERE ingeniero=%s", (proyectos,))
+    proyectos = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    conn.close()
+    return numero_proyecto
+
 def obtener_proyectos_con_horas():
     """Retrieves all projects with their allocated hours."""
 
