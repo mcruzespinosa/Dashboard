@@ -362,7 +362,8 @@ elif selected == "Historial":
 
         # Mostrar detalles del reporte
         for rec in records:
-            with st.expander(f"Reporte #{rec['id']} - {rec['created_at'][:19]}"):
+            with st.expander(f"Reporte #{rec['id']} - {rec['created_at'].strftime('%Y-%m-%d %H:%M:%S')}"):
+            #with st.expander(f"Reporte #{rec['id']} - {rec['created_at'][:19]}"):
                 st.write(f"**Área:** {rec['area']}")
                 st.write(f"**Cantidad Dañadas:** {rec['cantidad']}")
                 st.write(f"**Fecha / Hora:** {rec['fecha']} {rec['hora']}")
