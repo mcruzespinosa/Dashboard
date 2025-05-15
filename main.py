@@ -252,7 +252,7 @@ elif selected == "Registro de horas":
                    return
 
                 duracion = str(datetime.strptime(fin, "%Y-%m-%d %H:%M:%S") - datetime.strptime(inicio, "%Y-%m-%d %H:%M:%S"))
-        
+                actualizar_registro(st.session_state.id_registro, fin, duracion)
             # Restablecer estados
                 st.session_state.boton_texto = "Iniciar"
                 st.session_state.proyecto_activo = False
