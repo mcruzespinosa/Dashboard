@@ -222,6 +222,8 @@ elif selected == "Registro de horas":
         #st.write(f"🔄 Estado del botón: *{proyecto_seleccionado}*")
         #st.write(f"🔄 Estado del botón: *{st.session_state.user}*")
         # Inicializar estados
+         NUMERO_PROYECTO = obtener_numero_proyecto(proyectos)
+         st.write(f"NUMERO DE PROYECTO:*{NUMERO_PROYECTO}*")
         if "boton_texto" not in st.session_state:
             st.session_state.boton_texto = "Iniciar"
         if "proyecto_activo" not in st.session_state:
