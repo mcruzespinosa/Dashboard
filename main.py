@@ -21,6 +21,20 @@ BACKGROUND_IMG = "registro_incidencias_fondo.jpg"
 LOGO_URL = "https://vimexelectronics.mx/wp-content/uploads/2023/07/icon_vimex.png"
 # ---------------------
 
+def mostrar_alerta_cierre():
+    if "ultima_fecha_alerta" not in st.session_state or st.session_state.ultima_fecha_alerta != datetime.now().date():
+        st.session_state.alerta_mostrada_hoy = False
+        st.session_state.ultima_fecha_alerta = datetime.now().date()
+
+    ahora = datetime.now().strftime("%H:%M")
+    if ahora == "17:50" and not st.session_state.alerta_mostrada_hoy:
+        with st.modal("Recordatorio de Cierre"):
+            st.warning("🔔 Recuerda cerrar tus actividades antes de salir.")
+            st.button("Cerrar", on_click=lambda: setattr(st.session_state, "alerta_mostrada_hoy", True))
+
+# Llamar a la función al inicio
+mostrar_alerta_cierre()
+
 
 # Función: Inicio de sesión y registro
 def login_register():
