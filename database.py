@@ -378,3 +378,20 @@ def obtener_ultimo_registro(usuario, proyecto):
 
     # Retornar el ID y la fecha de inicio como cadena
     return registro[0], registro[1].strftime("%Y-%m-%d %H:%M:%S") if isinstance(registro[1], datetime) else registro[1]
+    
+    
+    
+    
+
+
+def proyecto_activo(usuario):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, proyecto, inicio FROM registros
+        WHERE usuario = ? AND activo = 1
+        LIMIT 1
+    """, (usuario,))
+    resultado = cursor.fetchone()
+    conn.close()
+    return resultado
