@@ -267,31 +267,30 @@ if selected == "Inicio":
 
 
 elif selected == "Registro de horas":
-     
-     proyectos=obtener_proyectos(st.session_state.user)
-     st.subheader("Controla el tiempo de tus proyectos fácilmente")
-     if proyectos:
-        proyecto_seleccionado=st.selectbox("Selecciona tu proyecto",proyectos)
-        #st.write(f"🔄 Estado del botón: *{proyecto_seleccionado}*")
-        #st.write(f"🔄 Estado del botón: *{st.session_state.user}*")
-        # Inicializar estados
+    proyectos = obtener_proyectos(st.session_state.user)
+    st.subheader("Controla el tiempo de tus proyectos fácilmente")
+    
+    if proyectos:
+        proyecto_seleccionado = st.selectbox("Selecciona tu proyecto", proyectos)
         
-        usuario = st.session_state.get("user", "default_user")  # Asegúrate de que el usuario esté autenticado
-        proyecto_activo = proyecto_activo(usuario)
+        # Verificar si ya hay un proyecto activo
+        usuario = st.session_state.get("user", "default_user")
+        proyecto_activo_data = proyecto_activo(usuario)
 
-        if proyecto_activo:
-           registro_id, proyecto, inicio = proyecto_activo
-           if st.button("Terminar Proyecto"):
-              terminar_proyecto(registro_id)
-              st.success(f"Proyecto '{proyecto}' terminado con éxito.")
+        if proyecto_activo_data:
+            # Si hay un proyecto activo, mostramos el botón para terminarlo
+            registro_id, proyecto, inicio = proyecto_activo_data
+            
+            if st.button("Terminar Proyecto"):
+                terminar_proyecto(registro_id)
+                st.success(f"Proyecto '{proyecto}' terminado con éxito.")
         else:
-           proyecto_seleccionado = st.text_input("Nombre del Proyecto")
-           if proyecto_seleccionado and st.button("Iniciar Proyecto"):
-              iniciar_proyecto(usuario, proyecto_seleccionado)
-              st.success(f"Proyecto '{proyecto_seleccionado}' iniciado.")
-        
-        
-        
+            # Si no hay proyecto activo, permitimos iniciar uno nuevo
+            if proyecto_seleccionado and st.button("Iniciar Proyecto"):
+                iniciar_proyecto(usuario, proyecto_seleccionado)
+                st.success(f"Proyecto '{proyecto_seleccionado}' iniciado.")
+    else:
+        st.warning("No tienes proyectos asignados.")
         
         
         
