@@ -281,14 +281,14 @@ elif selected == "Registro de horas":
 
       if proyecto_activo:
           registro_id, proyecto, inicio = proyecto_activo
-      if st.button("Terminar Proyecto"):
-          terminar_proyecto(registro_id)
-          st.success(f"Proyecto '{proyecto}' terminado con éxito.")
+          if st.button("Terminar Proyecto"):
+             terminar_proyecto(registro_id)
+             st.success(f"Proyecto '{proyecto}' terminado con éxito.")
       else:
          proyecto_seleccionado = st.text_input("Nombre del Proyecto")
-      if proyecto_seleccionado and st.button("Iniciar Proyecto"):
-         iniciar_proyecto(usuario, proyecto_seleccionado)
-         st.success(f"Proyecto '{proyecto_seleccionado}' iniciado.")
+         if proyecto_seleccionado and st.button("Iniciar Proyecto"):
+            iniciar_proyecto(usuario, proyecto_seleccionado)
+            st.success(f"Proyecto '{proyecto_seleccionado}' iniciado.")
         
         
         
