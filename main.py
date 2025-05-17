@@ -36,6 +36,24 @@ def mostrar_alerta_cierre():
 mostrar_alerta_cierre()
 
 
+
+from datetime import datetime
+
+def iniciar_proyecto(usuario, proyecto):
+    conn = get_connection()
+    cursor = conn.cursor()
+    inicio = datetime.now().isoformat()
+    cursor.execute("""
+        INSERT INTO registros (usuario, proyecto, inicio, activo)
+        VALUES (?, ?, ?, 1)
+    """, (usuario, proyecto, inicio))
+    conn.commit()
+    conn.close()
+
+
+
+
+
 # Función: Inicio de sesión y registro
 def login_register():
     st.title("🔐 Ingreso al sistema")
