@@ -37,7 +37,6 @@ mostrar_alerta_cierre()
 
 
 
-from datetime import datetime
 
 def iniciar_proyecto(usuario, proyecto):
     conn = get_connection()
@@ -53,9 +52,6 @@ def iniciar_proyecto(usuario, proyecto):
 
 
 
-
-
-from datetime import datetime
 
 def terminar_proyecto(registro_id):
     conn = get_connection()
@@ -279,62 +275,84 @@ elif selected == "Registro de horas":
         #st.write(f"🔄 Estado del botón: *{proyecto_seleccionado}*")
         #st.write(f"🔄 Estado del botón: *{st.session_state.user}*")
         # Inicializar estados
+        
+        usuario = st.session_state.get("user", "default_user")  # Asegúrate de que el usuario esté autenticado
+        proyecto_activo = proyecto_activo(usuario)
+
+      if proyecto_activo:
+          registro_id, proyecto, inicio = proyecto_activo
+      if st.button("Terminar Proyecto"):
+          terminar_proyecto(registro_id)
+          st.success(f"Proyecto '{proyecto}' terminado con éxito.")
+      else:
+         proyecto_seleccionado = st.text_input("Nombre del Proyecto")
+      if proyecto_seleccionado and st.button("Iniciar Proyecto"):
+         iniciar_proyecto(usuario, proyecto_seleccionado)
+         st.success(f"Proyecto '{proyecto_seleccionado}' iniciado.")
+        
+        
+        
+        
+        
+        
+        
+        
         numero_proyecto = obtener_numero_proyecto(proyecto_seleccionado)
         st.write(f"NUMERO DE PROYECTO:*{numero_proyecto}*")
-        if "boton_texto" not in st.session_state:
-            st.session_state.boton_texto = "Iniciar"
-        if "proyecto_activo" not in st.session_state:
-            st.session_state.proyecto_activo = False
-        if "inicio_proyecto" not in st.session_state:
-            st.session_state.inicio_proyecto = None
-        if "id_registro" not in st.session_state:
-            st.session_state.id_registro = None
+        #if "boton_texto" not in st.session_state:
+            #st.session_state.boton_texto = "Iniciar"
+        #if "proyecto_activo" not in st.session_state:
+            #st.session_state.proyecto_activo = False
+        #if "inicio_proyecto" not in st.session_state:
+            #st.session_state.inicio_proyecto = None
+        #if "id_registro" not in st.session_state:
+            #st.session_state.id_registro = None
 
         # Manejar el clic del botón
-        def cambiar_estado():
-            if not st.session_state.user or not proyecto_seleccionado:
-                st.error("Por favor, ingresa tu nombre y el número del proyecto.")
-                return
+        #def cambiar_estado():
+            #if not st.session_state.user or not proyecto_seleccionado:
+                #st.error("Por favor, ingresa tu nombre y el número del proyecto.")
+                #return
     
-            if st.session_state.proyecto_activo:
+            #if st.session_state.proyecto_activo:
                 # Terminar proyecto
                # from datetime import datetime
 
-                fin = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                inicio = st.session_state.inicio_proyecto
+                #fin = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                #inicio = st.session_state.inicio_proyecto
 
                 # Asegúrate de que 'inicio' sea una cadena
-                if isinstance(inicio, datetime):
-                   inicio = inicio.strftime("%Y-%m-%d %H:%M:%S")
-                elif not isinstance(inicio, str):
-                   st.error(f"El valor de 'inicio_proyecto' no es válido: {inicio} ({type(inicio)})")
-                   return
+                #if isinstance(inicio, datetime):
+                   #inicio = inicio.strftime("%Y-%m-%d %H:%M:%S")
+                #elif not isinstance(inicio, str):
+                   #st.error(f"El valor de 'inicio_proyecto' no es válido: {inicio} ({type(inicio)})")
+                   #return
 
-                duracion = str(datetime.strptime(fin, "%Y-%m-%d %H:%M:%S") - datetime.strptime(inicio, "%Y-%m-%d %H:%M:%S"))
-                actualizar_registro(st.session_state.id_registro, fin, duracion)
+                #duracion = str(datetime.strptime(fin, "%Y-%m-%d %H:%M:%S") - datetime.strptime(inicio, "%Y-%m-%d %H:%M:%S"))
+                #actualizar_registro(st.session_state.id_registro, fin, duracion)
             # Restablecer estados
-                st.session_state.boton_texto = "Iniciar"
-                st.session_state.proyecto_activo = False
-                st.session_state.inicio_proyecto = None
-                st.session_state.id_registro = None
-                st.success(f"✅ Proyecto '{proyecto_seleccionado}' terminado correctamente.")
-            else:
+                #st.session_state.boton_texto = "Iniciar"
+                #st.session_state.proyecto_activo = False
+                #st.session_state.inicio_proyecto = None
+                #st.session_state.id_registro = None
+                #st.success(f"✅ Proyecto '{proyecto_seleccionado}' terminado correctamente.")
+            #else:
                 # Iniciar proyecto
-                inicio = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                insertar_registro(st.session_state.user, proyecto_seleccionado, inicio)
+                #inicio = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                #insertar_registro(st.session_state.user, proyecto_seleccionado, inicio)
                 # Guardar ID del registro y estado de sesión
-                ultimo_registro = obtener_ultimo_registro(st.session_state.user, proyecto_seleccionado)
-                if ultimo_registro:
-                    st.session_state.id_registro = ultimo_registro[0]
-                    st.session_state.inicio_proyecto = ultimo_registro[1]
-                    st.session_state.boton_texto = "Terminar"
-                    st.session_state.proyecto_activo = True
-                    st.success(f"🚀 Proyecto '{proyecto_seleccionado}' iniciado correctamente.")
+                #ultimo_registro = obtener_ultimo_registro(st.session_state.user, proyecto_seleccionado)
+                #if ultimo_registro:
+                    #st.session_state.id_registro = ultimo_registro[0]
+                    #st.session_state.inicio_proyecto = ultimo_registro[1]
+                    #st.session_state.boton_texto = "Terminar"
+                    #st.session_state.proyecto_activo = True
+                    #st.success(f"🚀 Proyecto '{proyecto_seleccionado}' iniciado correctamente.")
 
         
 
         # Mostrar el botón
-        st.button(st.session_state.boton_texto, on_click=cambiar_estado, key="cambiar_estado_btn", help="Haz clic para iniciar o terminar un proyecto.")
+        #st.button(st.session_state.boton_texto, on_click=cambiar_estado, key="cambiar_estado_btn", help="Haz clic para iniciar o terminar un proyecto.")
 
         # Mostrar el estado actual del botón
         #st.write(f"🔄 Estado del botón: *{st.session_state.boton_texto}*")
