@@ -54,6 +54,31 @@ def iniciar_proyecto(usuario, proyecto):
 
 
 
+
+from datetime import datetime
+
+def terminar_proyecto(registro_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    fin = datetime.now().isoformat()
+    
+    # Calcular la duración
+    cursor.execute("""
+        SELECT inicio FROM registros WHERE id = ?
+    """, (registro_id,))
+    inicio = cursor.fetchone()[0]
+    duracion = datetime.fromisoformat(fin) - datetime.fromisoformat(inicio)
+    duracion_str = str(duracion)
+
+    cursor.execute("""
+        UPDATE registros 
+        SET fin = ?, duracion = ?, activo = 0
+        WHERE id = ?
+    """, (fin, duracion_str, registro_id))
+    conn.commit()
+    conn.close()
+
+
 # Función: Inicio de sesión y registro
 def login_register():
     st.title("🔐 Ingreso al sistema")
