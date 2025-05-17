@@ -341,7 +341,18 @@ def actualizar_registro(id_registro, fin, duracion):
     """, (fin, duracion, id_registro))
     conn.commit()
     cursor.close()
+    conn.def proyecto_activo(usuario):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, proyecto, inicio FROM registros
+        WHERE usuario = ? AND activo = 1
+        LIMIT 1
+    """, (usuario,))
+    resultado = cursor.fetchone()
     conn.close()
+    return resultado
+
 
 def obtener_ultimo_registro(usuario, proyecto):
     """Retrieves the last started time tracking entry for a user and project."""
