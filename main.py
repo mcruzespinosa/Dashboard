@@ -281,8 +281,8 @@ def proyecto_activo(usuario):
 
 # Módulo de registro de horas
 elif selected == "Registro de horas":
-    proyectos = obtener_proyectos(st.session_state.user)
-    st.subheader("Controla el tiempo de tus proyectos fácilmente")
+     proyectos = obtener_proyectos(st.session_state.user)
+     st.subheader("Controla el tiempo de tus proyectos fácilmente")
     
     if proyectos:
         proyecto_seleccionado = st.selectbox("Selecciona tu proyecto", proyectos)
