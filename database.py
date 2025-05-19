@@ -341,7 +341,9 @@ def actualizar_registro(id_registro, fin, duracion):
     """, (fin, duracion, id_registro))
     conn.commit()
     cursor.close()
-    conn.def proyecto_activo(usuario):
+
+
+def proyecto_activo(usuario):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
