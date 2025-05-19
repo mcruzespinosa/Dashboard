@@ -9,7 +9,7 @@ from PIL import Image
 import requests
 import io
 import os
-from database import verify_user, proyecto_activo,obtener_ultimo_registro, get_connection, add_user, insertar_registro, \
+from database import verify_user, proyecto_activo , obtener_ultimo_registro, get_connection, add_user, insertar_registro, \
 obtener_proyectos, actualizar_registro, add_incident, get_incidents, create_tables, add_exam,obtener_numero_proyecto,actualizar_registro
 import numpy as np
 import matplotlib.pyplot as plt
