@@ -36,6 +36,52 @@ def mostrar_alerta_cierre():
 mostrar_alerta_cierre()
 
 
+    # Función para iniciar un proyecto
+def iniciar_proyecto(usuario, proyecto):
+    conn = get_connection()
+    cursor = conn.cursor()
+    inicio = datetime.now().isoformat()
+    cursor.execute("""
+    INSERT INTO registros (usuario, proyecto, inicio, activo)
+    VALUES (%s, %s, %s, true)
+    """, (usuario, proyecto, inicio))
+    conn.commit()
+    conn.close()
+
+    # Función para terminar un proyecto
+def terminar_proyecto(registro_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    fin = datetime.now().isoformat()
+    
+    # Calcular la duración
+    cursor.execute("""
+        SELECT inicio FROM registros WHERE id = %s
+    """, (registro_id,))
+    inicio = cursor.fetchone()[0]
+    duracion = datetime.fromisoformat(fin) - datetime.fromisoformat(inicio)
+    duracion_str = str(duracion)
+
+    cursor.execute("""
+        UPDATE registros 
+        SET fin = %s, duracion = %s, activo = false
+        WHERE id = %s
+    """, (fin, duracion_str, registro_id))
+    conn.commit()
+    conn.close()
+
+    # Función para verificar si hay un proyecto activo
+def proyecto_activo(usuario):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, proyecto, inicio FROM registros
+        WHERE usuario = %s AND activo = true
+        LIMIT 1
+    """, (usuario,))
+    resultado = cursor.fetchone()
+    conn.close()
+    return resultado
 
 
 
@@ -220,73 +266,13 @@ if selected == "Inicio":
             conn.close()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-# Función para iniciar un proyecto
-def iniciar_proyecto(usuario, proyecto):
-    conn = get_connection()
-    cursor = conn.cursor()
-    inicio = datetime.now().isoformat()
-    cursor.execute("""
-        INSERT INTO registros (usuario, proyecto, inicio, activo)
-        VALUES (%s, %s, %s, true)
-    """, (usuario, proyecto, inicio))
-    conn.commit()
-    conn.close()
-
-# Función para terminar un proyecto
-def terminar_proyecto(registro_id):
-    conn = get_connection()
-    cursor = conn.cursor()
-    fin = datetime.now().isoformat()
-    
-    # Calcular la duración
-    cursor.execute("""
-        SELECT inicio FROM registros WHERE id = %s
-    """, (registro_id,))
-    inicio = cursor.fetchone()[0]
-    duracion = datetime.fromisoformat(fin) - datetime.fromisoformat(inicio)
-    duracion_str = str(duracion)
-
-    cursor.execute("""
-        UPDATE registros 
-        SET fin = %s, duracion = %s, activo = false
-        WHERE id = %s
-    """, (fin, duracion_str, registro_id))
-    conn.commit()
-    conn.close()
-
-# Función para verificar si hay un proyecto activo
-def proyecto_activo(usuario):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT id, proyecto, inicio FROM registros
-        WHERE usuario = %s AND activo = true
-        LIMIT 1
-    """, (usuario,))
-    resultado = cursor.fetchone()
-    conn.close()
-    return resultado
-
 # Módulo de registro de horas
 elif selected == "Registro de horas":
-     proyectos = obtener_proyectos(st.session_state.user)
-     st.subheader("Controla el tiempo de tus proyectos fácilmente")
+    proyectos = obtener_proyectos(st.session_state.user)
+    st.subheader("Controla el tiempo de tus proyectos fácilmente")
     
     if proyectos:
         proyecto_seleccionado = st.selectbox("Selecciona tu proyecto", proyectos)
-        
         # Verificar si ya hay un proyecto activo
         usuario = st.session_state.get("user", "default_user")
         proyecto_activo_data = proyecto_activo(usuario)
@@ -303,14 +289,19 @@ elif selected == "Registro de horas":
             if proyecto_seleccionado and st.button("Iniciar Proyecto"):
                 iniciar_proyecto(usuario, proyecto_seleccionado)
                 st.success(f"Proyecto '{proyecto_seleccionado}' iniciado.")
-    else:
-        st.warning("No tienes proyectos asignados.")     
+            else:
+                st.warning("No tienes proyectos asignados.")     
         
         
         
         
         numero_proyecto = obtener_numero_proyecto(proyecto_seleccionado)
         st.write(f"NUMERO DE PROYECTO:*{numero_proyecto}*")
+        
+
+
+        
+            
         #if "boton_texto" not in st.session_state:
             #st.session_state.boton_texto = "Iniciar"
         #if "proyecto_activo" not in st.session_state:
